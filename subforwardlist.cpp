@@ -1,6 +1,3 @@
-#include <iostream>
-using std::cin;
-using std::cout;
 #include <cassert>
 
 struct subforwardlist {
@@ -8,143 +5,105 @@ struct subforwardlist {
   subforwardlist* next;
 };
 
-typedef subforwardlist   sfl;   // переименовали для удобства
-typedef subforwardlist * sfl_p; // ------
-
-bool init(sfl_p *lst) //**, инициализация пустого недосписка
+//Инициализация пустого недосписка
+bool init(subforwardlist** lst)
 {
   assert(lst != nullptr);
-
   *lst = nullptr;
   return true;
 }
+//Инициализация пустого недосписка
 
-bool push_back(sfl_p *lst, int d) //добавление элемента в конец недосписка
+//Добавление элемента в конец недосписка
+bool push_back(subforwardlist** lst, int d)
 {
   assert(lst != nullptr);
-
   if (*lst != nullptr)
     return push_back(&(*lst)->next, d);
-
-  *lst = new sfl;
+  *lst = new subforwardlist;
   (*lst)->data = d;
   (*lst)->next = nullptr;
-
   return true;
-
-  /*if ((*sfl)->next != nullptr)
-  {
-    push_back(&( (*sfl)->next ), d); //типа сдвинулись на один некст дальше, и вызвали от него функцию опять
-  }
-  else
-  {
-    (*sfl)->next->data = d; //по адресу некста добавляем новый элемент
-    (*sfl)->next->next = nullptr; //для добав. элем. делаем указ. на след. как нулл
-  }
-
-  return true;*/
 }
+//Добавление элемента в конец недосписка
 
-int pop_back(sfl_p *lst) //удаление элемента с конца недосписка
+//Удаление элемента с конца недосписка
+int pop_back(subforwardlist** lst) //удаление элемента с конца недосписка
 {
-  /*мы такие ползем до конца, ищем последний элемент, то есть у которого указатель на
-   * следующий это nullptr. И когда находим, отодвигаемся на один элемент назад, и вот
-   * у него меняем указатель с бывшего последнего элемента на nullptr */
   assert(lst != nullptr);
   if (*lst == nullptr)
     return 0;
-
   if ((*lst)->next != nullptr)
     return pop_back(&(*lst)->next);
-
   int wasted = (*lst)->data;
   delete *lst;
   *lst = nullptr;
   return wasted;
 }
+//Удаление элемента с конца недосписка
 
-bool push_forward(sfl_p *lst, int d) //добавление элемента в начало недосписка
+//Добавление элемента в начало недосписка
+bool push_forward(subforwardlist** lst, int d)
 {
   assert(lst != nullptr);
-
-  sfl_p node = new sfl;
-  node->data = d;
-  node->next = *lst; // шарику новому даем указатель на первый до него шарик
-
-  *lst = node; //перешиваем указатель с предыдущего первого шарика на наш новый
-
+  subforwardlist* lst2 = new subforwardlist;
+  lst2->data = d;
+  lst2->next = *lst;
+  *lst = lst2;
   return true;
 }
+//Добавление элемента в начало недосписка
 
-int pop_forward(sfl_p *lst) //удаление элемента из начала недосписка
+//Удаление элемента из начала недосписка
+int pop_forward(subforwardlist** lst)
 {
   assert(lst != nullptr);
   if (*lst == nullptr)
     return 0;
-
   int wasted = (*lst)->data;
-  sfl_p adress = *lst;
+  subforwardlist* excess= *lst;
   *lst = (*lst)->next;
-  delete adress;
-
+  delete excess;
   return wasted;
-
 }
+//Удаление элемента из начала недосписка
 
-bool push_where(sfl_p *lst, unsigned int where, int d) //добавление элемента с поряд-
-                                                       //ковым номером where
+//Добавление элемента с порядковым номером where
+bool push_where(subforwardlist** lst, unsigned int where, int d)
 {
   assert(lst != nullptr);
-
   if (where > 1)
     return push_where(&(*lst)->next, where - 1, d);
-
   return push_forward(lst, d);
 }
+//Добавление элемента с порядковым номером where
 
-bool erase_where(sfl_p *lst, unsigned int where) //удаление элемента с порядковым номером where
+//Удаление элемента с порядковым номером where
+bool erase_where(subforwardlist** lst, unsigned int where)
 {
   assert(lst != nullptr);
-
   if (where > 1)
     return erase_where(&(*lst)->next, where - 1);
-
   pop_forward(lst);
   return true;
 }
+//Удаление элемента с порядковым номером where
 
-unsigned int size(sfl_p *lst) //определить размер недосписка
+//Определить размер недосписка
+unsigned int size(subforwardlist** lst)
 {
   assert(lst != nullptr);
-
   if ((*lst) == nullptr)
     return 0;
   return (size(&(*lst)->next) + 1);
-
 }
+//Определить размер недосписка
 
-void clear(sfl_p *lst) //очистить содержимое недосписка
+//Очистить содержимое недосписка
+void clear(subforwardlist** lst)
 {
   unsigned int Size = size(lst);
   for (int i = 0; i < Size; ++i)
     pop_forward(lst);
 }
-
-/*int main()
-{
-  sfl_p list;
-
-  init(&list);
-
-  for (int i = 0; i < 100; ++i)
-    push_back(&list, i);
-
-  for (int i = 0; i < 100; ++i)
-    push_forward(&list, i);
-
-  for (int i = 0; i < 200;  ++i)
-    cout << pop_back(&list) << (i % 15 == 0 ? "\n" : " ");
-
-  clear(&list);
-  return 0;
-}*/
+//Очистить содержимое недосписка
