@@ -35,6 +35,20 @@ int subvector::pop_back()
     top--;
     return mas[top];
 }
+void subvector::insert(int p, int d)
+{
+    if(top+1 >= capacity)
+        capacity++;
+    int *p = new int[capacity];
+    top++;
+    for(int i = 0; i < top; i++)
+        p[i] = data[i];
+    p[position] = value;
+    for(int i = position + 1; i < top; i++)
+        p[i] = data[i-1];
+    delete[] data;
+    data = p;
+}
 bool subvector::resize(unsigned int new_capacity)
 {
     if (new_capacity <= capacity)
