@@ -1,29 +1,15 @@
-#include <cassert>
+#include "subset.h"
 #include <algorithm>
 
-struct subset_node
+subset::subset(node** sn)
 {
-    int key;
-    subset_node* left;
-    subset_node* right;
-    subset_node* parent;
-};
-
-//Инициализация пустого дерева
-bool init(subset_node** sn)
-{
-    assert(sn != nullptr);
     *sn = nullptr;
-    return true;
 }
-//Инициализация пустого дерева
-
-//Добавление элемента в дерево
-bool insert(subset_node** sn, int k, subset_node* parent = nullptr)
+bool subset::insert(node** sn, int k, node* parent)
 {
     if ((*sn) == nullptr)
     {
-        *sn = new subset_node;
+        *sn = new node;
         (*sn)->key = k;
         (*sn)->left = nullptr;
         (*sn)->right = nullptr;
@@ -43,10 +29,7 @@ bool insert(subset_node** sn, int k, subset_node* parent = nullptr)
         return insert(&((*sn)->right), k, *sn);
     return false;
 }
-//Добавление элемента в дерево
-
-//Поиск элемента в дереве
-subset_node* find(subset_node* sn, int k)
+node* subset::find(node* sn, int k)
 {
     if (sn == nullptr)
         return nullptr;
@@ -57,28 +40,19 @@ subset_node* find(subset_node* sn, int k)
     else
         return find((*sn).left, k);
 }
-//Поиск элемента в дереве
-
-//Количество элементов в дереве
-unsigned int size(subset_node* sn)
+unsigned int subset::size(node* sn)
 {
     if (sn == nullptr)
         return 0;
     return (1 + size(sn->right) + size(sn->left));
 }
-//Количество элементов в дереве
-
-//Высота дерева
-unsigned int height(subset_node* sn)
+unsigned int subset::height(node* sn)
 {
     if (sn == nullptr)
         return 0;
     return (1 + std::max(size(sn->right), size(sn->left)));
 }
-//Высота дерева
-
-//Поиск крайнего левого элемента
-int find_the_left(subset_node* sn)
+int subset::find_the_left(node* sn)
 {
     if (sn != nullptr)
     {
@@ -89,20 +63,16 @@ int find_the_left(subset_node* sn)
     }
     return 0;
 }
-//Поиск крайнего левого элемента
-
-subset_node* findmin(subset_node* sn)
+node* subset::findmin(node* sn)
 {
     if (sn->left == nullptr)
         return sn;
-    subset_node * min = sn;
+    node * min = sn;
     while (min->left)
         min = min->left;
     return min;
 }
-
-//Удаление элемента из дерева
-subset_node* remove_rec(subset_node* sn, int k)
+node* subset::remove_rec(node* sn, int k)
 {
     if (sn == nullptr)
         return sn;
@@ -117,7 +87,7 @@ subset_node* remove_rec(subset_node* sn, int k)
     }
     else
     {
-        subset_node * tmp = sn;
+        node * tmp = sn;
         if (sn->left != nullptr)
             sn = sn->left;
         else if (sn->right != nullptr)
@@ -128,29 +98,12 @@ subset_node* remove_rec(subset_node* sn, int k)
     }
     return sn;
 }
-//Удаление элемента из дерева
-
-
-bool remove(subset_node** sn, int k)
+bool subset::remove(node** sn, int k)
 {
     *sn = remove_rec(*sn, k);
     return true;
 }
-
-//Очистить всю используемую память
-void destructor(subset_node* sn)
-{
-    if (sn == nullptr)
-        return;
-    destructor((*sn).left);
-    destructor((*sn).right);
-    delete sn;
-    sn = nullptr;
-    return;
-}
-//Очистить всю используемую память
-
-void DFS_rec(subset_node* sn, int* arr, int* i)
+void subset::DFS_rec(node* sn, int* arr, int* i)
 {
     if (sn == nullptr)
         return;
@@ -160,8 +113,7 @@ void DFS_rec(subset_node* sn, int* arr, int* i)
     DFS_rec(sn->right, arr, i);
     return;
 }
-
-int* DFS(subset_node* sn)
+int* subset::DFS(node* sn)
 {
     size_t size_arr = size(sn);
     int* arr = new int [size_arr];
